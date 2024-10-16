@@ -32,6 +32,6 @@ export class ProductPostgres {
   @Column('int')
   stock: number;
 
-  @Column('timestamp')
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 }
