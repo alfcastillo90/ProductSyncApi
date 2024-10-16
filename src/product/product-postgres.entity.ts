@@ -34,4 +34,8 @@ export class ProductPostgres {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  // Soft delete: Almacena la fecha de eliminación en lugar de eliminar el registro
+  @Column({ type: 'timestamp', nullable: true })
+  deletedAt: Date | null;
 }
