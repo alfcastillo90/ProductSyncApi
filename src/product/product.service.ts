@@ -58,4 +58,77 @@ export class ProductService implements OnModuleInit {
     this.logger.debug('Running cron job: syncing products from Contentful API...');
     await this.fetchProducts();
   }
+
+  async getPaginatedProducts(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+  
+    // Obtener productos no eliminados con paginación
+    const [products, total] = await Promise.all([
+      this.productModel
+        .find({ deletedAt: null }) // Solo productos no eliminados
+        .skip(skip)
+        .limit(limit),
+      this.productModel.countDocuments({ deletedAt: null }),
+    ]);
+  
+    const totalPages = Math.ceil(total / limit);
+  
+    return {
+      products,
+      page,
+      limit,
+      totalPages,
+      totalRows: total,
+    };
+  }
+
+  async deleteProductById(productId: string) {
+    const result = await this.productModel.updateOne(
+      { _id: productId },
+      { deletedAt: new Date() },
+    );
+  
+    if (result.modifiedCount > 0) {
+      return { message: 'Product deleted successfully.' };
+    } else {
+      return { message: 'Product not found or already deleted.' };
+    }
+  }
+  
+  async getProductsByPriceRange(minPrice: number, maxPrice: number) {
+    const products = await this.productModel
+      .find({
+        deletedAt: null,
+        price: { $gte: minPrice, $lte: maxPrice },
+      })
+      .exec();
+  
+    return products;
+  }
+  
+  async getLowStockProducts() {
+    const products = await this.productModel
+      .find({
+        deletedAt: null,
+        stock: { $lt: 10 },
+      })
+      .exec();
+  
+    return {
+      message: `Found ${products.length} products with low stock.`,
+      products,
+    };
+  }
+  
+  async getProductsByDateRange(startDate: Date, endDate: Date) {
+    const products = await this.productModel
+      .find({
+        deletedAt: null,
+        createdAt: { $gte: startDate, $lte: endDate },
+      })
+      .exec();
+  
+    return products;
+  }
+  
 }
