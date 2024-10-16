@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 
-jest.mock('axios'); // Mock de axios
+jest.mock('axios');
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -54,7 +54,6 @@ describe('ProductService', () => {
   });
 
   it('should fetch products and save them to the database', async () => {
-    // Simulamos la respuesta de axios
     (axios.get as jest.Mock).mockResolvedValue({
       data: {
         items: [
@@ -80,7 +79,7 @@ describe('ProductService', () => {
 
     await service.fetchProducts();
 
-    expect(axios.get).toHaveBeenCalled(); // Verificamos que se llamó a axios.get
+    expect(axios.get).toHaveBeenCalled();
     expect(productModel.insertMany).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
@@ -97,6 +96,14 @@ describe('ProductService', () => {
         }),
       ]),
       { ordered: false }
-    ); // Verificamos que insertMany fue llamado con los productos correctos
+    );
+  });
+
+  it('should call fetchProducts on module init', async () => {
+    const fetchProductsSpy = jest.spyOn(service, 'fetchProducts').mockResolvedValue();
+
+    await service.onModuleInit();
+
+    expect(fetchProductsSpy).toHaveBeenCalled();
   });
 });
