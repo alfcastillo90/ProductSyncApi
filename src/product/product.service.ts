@@ -1,9 +1,9 @@
-
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ConfigService } from '@nestjs/config'; // Importamos ConfigService para usar las variables de entorno
+import { Cron, CronExpression } from '@nestjs/schedule'; // Importar el módulo de Cron
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 import { Product } from './product.schema';
 
 @Injectable()
@@ -12,16 +12,16 @@ export class ProductService {
 
   constructor(
     @InjectModel('Product') private productModel: Model<Product>,
-    private readonly configService: ConfigService, // Inyectamos ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
+  // Función para sincronizar productos
   async fetchProducts() {
     const spaceId = this.configService.get<string>('CONTENTFUL_SPACE_ID');
     const accessToken = this.configService.get<string>('CONTENTFUL_ACCESS_TOKEN');
     const environment = this.configService.get<string>('CONTENTFUL_ENVIRONMENT');
     const contentType = this.configService.get<string>('CONTENTFUL_CONTENT_TYPE');
-    
-    // Construir la URL dinámica
+
     const url = `https://cdn.contentful.com/spaces/${spaceId}/environments/${environment}/entries?access_token=${accessToken}&content_type=${contentType}&limit=10`;
 
     try {
@@ -39,11 +39,18 @@ export class ProductService {
         createdAt: item.sys.createdAt,
       }));
 
-      // Guardar productos en MongoDB
+      // Insertar productos en MongoDB
       await this.productModel.insertMany(products, { ordered: false });
       this.logger.debug('Products successfully saved in MongoDB.');
     } catch (error) {
       this.logger.error('Error fetching or saving products: ', error.message);
     }
+  }
+
+  // Cron job que ejecuta fetchProducts cada hora
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleCron() {
+    this.logger.debug('Running cron job: syncing products from Contentful API...');
+    await this.fetchProducts();
   }
 }
