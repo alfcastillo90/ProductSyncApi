@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HealthController } from './health/health.controller';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { HealthController } from './health/health.controller';
         uri: configService.get('MONGODB_URI'),
       }),
       inject: [ConfigService],
-    })
+    }),
+    ProductModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
