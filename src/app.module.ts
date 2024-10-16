@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HealthController } from './health/health.controller';
 import { ProductModule } from './product/product.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductModule } from './product/product.module';
       inject: [ConfigService],
     }),
     ProductModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
