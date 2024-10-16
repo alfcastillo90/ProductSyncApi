@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductPostgres } from './product-postgres.entity';
+import { Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class ProductPostgresService implements OnModuleInit {
@@ -52,6 +53,65 @@ export class ProductPostgresService implements OnModuleInit {
     } catch (error) {
       this.logger.error('Error fetching or saving products:', error);
     }
+  }
+
+  // Obtener productos paginados
+  async getPaginatedProducts(page: number = 1, limit: number = 5) {
+    const [result, total] = await this.productRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: result,
+      page,
+      limit,
+      totalPages,
+      total,
+    };
+  }
+
+  // Eliminar producto por ID (soft delete)
+  async deleteProductById(id: string) {
+    const product = await this.productRepository.findOneBy({ id: parseInt(id) });
+    if (product) {
+      product.deletedAt = new Date();
+      await this.productRepository.save(product);
+      return { message: `Product with id ${id} has been soft deleted.` };
+    }
+    return { message: `Product with id ${id} not found.` };
+  }
+
+  // Obtener productos por rango de precio
+  async getProductsByPriceRange(minPrice: number = 0, maxPrice: number = 1000) {
+    return this.productRepository.find({
+      where: {
+        price: Between(minPrice, maxPrice),
+        deletedAt: null,
+      },
+    });
+  }
+
+  // Obtener productos por rango de fecha
+  async getProductsByDateRange(startDate: Date, endDate: Date) {
+    return this.productRepository.find({
+      where: {
+        createdAt: Between(startDate, endDate),
+        deletedAt: null,
+      },
+    });
+  }
+
+  // Obtener productos con poco stock
+  async getLowStockProducts() {
+    return this.productRepository.find({
+      where: {
+        stock: LessThanOrEqual(10),
+        deletedAt: null,
+      },
+    });
   }
 
   // Ejecutar la sincronización de productos al iniciar el módulo
