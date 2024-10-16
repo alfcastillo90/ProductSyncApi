@@ -1,5 +1,6 @@
 version: '3.9'
 services:
+  #MongoDB
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -10,3 +11,22 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./mongodb_data:/data/db
+
+  #PostgreSQL
+  postgres:
+    image: postgres:latest
+    container_name: postgresdb
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password123!.
+      POSTGRES_DB: products
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - db_network
+
+networks:
+  db_network:
+    driver: bridge
