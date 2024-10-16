@@ -1,86 +1,193 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Product Sync API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project is a Node.js-based backend API built with the [NestJS](https://nestjs.com/) framework, using both **MongoDB** and **PostgreSQL** for storing product data fetched from the **Contentful API**. The application is fully dockerized and provides both public and private modules to interact with the data.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+1. **Sync with Contentful API**: The application fetches product data from Contentful at regular intervals and stores it in both MongoDB and PostgreSQL.
+2. **API**: Offers pagination, filtering, and retrieval of products, insights and reports on product data, such as percentages of deleted products, products without prices, and custom reports.
+4. **Soft Delete**: Soft deletion of products is implemented, ensuring that removed products do not reappear after the app is restarted.
+5. **Database Integration**:
+   - **MongoDB**: Used for flexible and scalable data storage.
+   - **PostgreSQL**: Used for relational data storage with strong data integrity.
+6. **Dockerized**: The application is containerized using Docker and managed with a \`docker-compose\` file.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Technologies
 
-## Project setup
+- **NestJS**: A progressive Node.js framework.
+- **MongoDB**: NoSQL database for flexible data storage.
+- **PostgreSQL**: Relational database for structured data.
+- **TypeORM**: ORM for interacting with PostgreSQL.
+- **Mongoose**: ODM for interacting with MongoDB.
+- **Contentful API**: Source of product data.
+- **Docker**: Containerization of the API, databases, and services.
 
-```bash
-$ pnpm install
-```
+## Prerequisites
 
-## Compile and run the project
+- Docker installed on your system
+- Docker Compose installed
+- Contentful credentials (space ID, access token, environment, and content type)
 
-```bash
-# development
-$ pnpm run start
+## Setup and Installation
 
-# watch mode
-$ pnpm run start:dev
+1. **Clone the repository**:
+   \`\`\`bash
+   git clone <repository-url>
+   cd ProductSyncApi
+   \`\`\`
 
-# production mode
-$ pnpm run start:prod
-```
+2. **Create a \`.env\` file** in the root directory with the following variables:
 
-## Run tests
+   \`\`\`bash
+   MONGODB_URI=mongodb://root:example@mongodb:27017/productsync?authSource=admin
+   PORT=3000
+   CONTENTFUL_SPACE_ID=your_space_id
+   CONTENTFUL_ACCESS_TOKEN=your_access_token
+   CONTENTFUL_ENVIRONMENT=your_environment
+   CONTENTFUL_CONTENT_TYPE=product
+   POSTGRES_USER=root
+   POSTGRES_PASSWORD=your_password
+   POSTGRES_DB=products
+   POSTGRES_PORT=5432
+   POSTGRES_HOST=postgresdb
+   \`\`\`
 
-```bash
-# unit tests
-$ pnpm run test
+3. **Build and run the services** using Docker Compose:
+   \`\`\`bash
+   docker-compose up --build
+   \`\`\`
 
-# e2e tests
-$ pnpm run test:e2e
+   This will set up the API, MongoDB, and PostgreSQL services.
 
-# test coverage
-$ pnpm run test:cov
-```
+4. **Access the application**:
+   - API will be accessible on \`http://localhost:3000\`
+   - MongoDB will be accessible on \`mongodb://localhost:27017\`
+   - PostgreSQL will be accessible on \`postgresql://localhost:5432\`
 
-## Resources
+## Endpoints
 
-Check out a few resources that may come in handy when working with NestJS:
+### Public Endpoints
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Sync products from Contentful to MongoDB**:
+  \`\`\`bash
+  GET /api/products/sync
+  \`\`\`
 
-## Support
+- **Get paginated products**:
+  \`\`\`bash
+  GET /api/products?page={page}&limit={limit}
+  \`\`\`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Get products by price range**:
+  \`\`\`bash
+  GET /api/products/price-range?minPrice={minPrice}&maxPrice={maxPrice}
+  \`\`\`
 
-## Stay in touch
+- **Get products by date range**:
+  \`\`\`bash
+  GET /api/products/date-range?startDate={YYYY-MM-DD}&endDate={YYYY-MM-DD}
+  \`\`\`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **Get products with low stock**:
+  \`\`\`bash
+  GET /api/products/low-stock
+  \`\`\`
+
+### Private Endpoints (JWT Authentication Required)
+
+- **Delete a product by ID**:
+  \`\`\`bash
+  DELETE /api/products/:id
+  \`\`\`
+
+- **Sync products from Contentful to PostgreSQL**:
+  \`\`\`bash
+  GET /api/products-postgres/sync
+  \`\`\`
+
+- **Private reports**:
+  These require JWT authentication in the request headers.
+
+### JWT Authentication
+
+Private endpoints require JWT authentication. Obtain a JWT token by implementing a proper authentication flow or set up mock authentication for testing purposes.
+
+## Soft Delete
+
+The application implements a soft delete mechanism:
+- Products marked as deleted are not physically removed from the database.
+- These deleted products do not reappear when the app restarts.
+
+## Database Structure
+
+### MongoDB
+
+A flexible schema with Mongoose ODM, suitable for handling varied product data:
+
+\`\`\`typescript
+export const ProductSchema = new Schema<Product>({
+  sku: { type: String, required: true },
+  name: { type: String, required: true },
+  brand: { type: String, required: true },
+  productModel: { type: String, required: true },
+  category: { type: String, required: true },
+  color: { type: String, required: true },
+  price: { type: Number, required: true },
+  currency: { type: String, required: true },
+  stock: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now },
+  deletedAt: { type: Date, default: null }, // For soft delete
+});
+\`\`\`
+
+### PostgreSQL
+
+A relational schema using TypeORM for structured data storage:
+
+\`\`\`typescript
+@Entity('products')
+export class ProductPostgres {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  sku: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  brand: string;
+
+  @Column()
+  productModel: string;
+
+  @Column()
+  category: string;
+
+  @Column()
+  color: string;
+
+  @Column('decimal')
+  price: number;
+
+  @Column()
+  currency: string;
+
+  @Column()
+  stock: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+}
+\`\`\`
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is licensed under the MIT License.
