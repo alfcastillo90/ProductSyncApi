@@ -6,6 +6,7 @@ import { ProductController } from './product.controller'; // Importamos el contr
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductPostgres } from './product-postgres.entity';
 import { ProductPostgresService } from './product-postgres.service';
+import { ProductPostgresController } from './product-postgres.controller';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { ProductPostgresService } from './product-postgres.service';
     TypeOrmModule.forFeature([ProductPostgres]),
   ],
   providers: [ProductService, ProductPostgresService],
-  controllers: [ProductController], // Registramos el controlador
+  controllers: [ProductController, ProductPostgresController], // Registramos el controlador
 })
 export class ProductModule {}
