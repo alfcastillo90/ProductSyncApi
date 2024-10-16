@@ -5,13 +5,14 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller'; // Importamos el controlador
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductPostgres } from './product-postgres.entity';
+import { ProductPostgresService } from './product-postgres.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Product', schema: ProductSchema }]),
     TypeOrmModule.forFeature([ProductPostgres]),
   ],
-  providers: [ProductService],
+  providers: [ProductService, ProductPostgresService],
   controllers: [ProductController], // Registramos el controlador
 })
 export class ProductModule {}
