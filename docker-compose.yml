@@ -1,6 +1,27 @@
 version: '3.9'
 services:
-  #MongoDB
+  api:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - MONGODB_URI=mongodb://root:example@mongodb:27017/productsync?authSource=admin
+      - PORT=3000
+      - CONTENTFUL_SPACE_ID=9xs1613l9f7v
+      - CONTENTFUL_ACCESS_TOKEN=I-ThsT55eE_B3sCUWEQyDT4VqVO3x__20ufuie9usns
+      - CONTENTFUL_ENVIRONMENT=master
+      - CONTENTFUL_CONTENT_TYPE=product
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password123!.
+      - POSTGRES_DB=products
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgresdb
+    depends_on:
+      - postgres
+      - mongodb
+    networks:
+      - db_network
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -11,8 +32,9 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./mongodb_data:/data/db
+    networks:
+      - db_network
 
-  #PostgreSQL
   postgres:
     image: postgres:latest
     container_name: postgresdb
