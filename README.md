@@ -124,7 +124,7 @@ The application implements a soft delete mechanism:
 
 A flexible schema with Mongoose ODM, suitable for handling varied product data:
 
-\`\`\`typescript
+```typescript
 export const ProductSchema = new Schema<Product>({
   sku: { type: String, required: true },
   name: { type: String, required: true },
@@ -138,13 +138,13 @@ export const ProductSchema = new Schema<Product>({
   createdAt: { type: Date, default: Date.now },
   deletedAt: { type: Date, default: null }, // For soft delete
 });
-\`\`\`
+```
 
 ### PostgreSQL
 
 A relational schema using TypeORM for structured data storage:
 
-\`\`\`typescript
+```typescript
 @Entity('products')
 export class ProductPostgres {
   @PrimaryGeneratedColumn('uuid')
@@ -186,7 +186,7 @@ export class ProductPostgres {
   @DeleteDateColumn()
   deletedAt: Date;
 }
-\`\`\`
+```
 
 ## License
 
